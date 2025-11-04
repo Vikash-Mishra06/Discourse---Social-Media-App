@@ -5,15 +5,16 @@ import connectDb from "./db/db.js";
 import { inngest, functions } from "./inngest/index.js";
 import { serve } from "inngest/express";
 
-connectDb();
 const app = express();
 
 app.use(express.json());
 app.use(cors());
 
-app.get("/", (req, res) => res.send("Server is running"));
-app.use('/api/inngest', serve({ client: inngest, functions }));
+await connectDb();
 
-const PORT = process.env.PORT || 3000;
+app.get("/", (req, res) => res.send("Server is running"));
+app.use("/api/inngest", serve({ client: inngest, functions }));
+
+const PORT = process.env.PORT || 4000;
 
 app.listen(PORT, () => console.log(`Server is running on port: ${PORT}`));
