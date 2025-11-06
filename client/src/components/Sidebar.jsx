@@ -4,11 +4,12 @@ import { Link, useNavigate } from 'react-router-dom'
 import { CirclePlus, LogOut, SidebarOpen, User } from 'lucide-react'
 import MenuItems from './MenuItems'
 import { UserButton, useClerk } from '@clerk/clerk-react'
-
+import { useSelector } from 'react-redux'
 
 const Sidebar = ({ SidebarOpen, setSidebarOpen }) => {
     const navigate = useNavigate()
-    const user = dummyUserData
+    const user = useSelector((state) => state.users.value)
+
     const { signOut } = useClerk()
 
     return (
@@ -32,7 +33,7 @@ const Sidebar = ({ SidebarOpen, setSidebarOpen }) => {
                         <p className='text-xs text-gray-500'>@{user.username}</p>
                     </div>
                 </div>
-                    <LogOut onClick={signOut} className='w-4.5 text-gray-500 hover:text-gray-700 transition cursor-pointer'/>
+                <LogOut onClick={signOut} className='w-4.5 text-gray-500 hover:text-gray-700 transition cursor-pointer' />
             </div>
         </div>
     )

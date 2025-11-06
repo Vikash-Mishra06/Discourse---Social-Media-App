@@ -1,30 +1,50 @@
 import React, { useState, useRef } from 'react'
 import { dummyUserData } from '../assets/assets'
 import { Pencil, X, Loader2 } from 'lucide-react'
+import { useSelector, useDispatch } from 'react-redux'
+import { updateUser } from '../features/users/usersSlice'
+import { useAuth } from '@clerk/clerk-react'
+import toast from 'react-hot-toast'
 
 const ProfileModel = ({ onClose }) => {
 
-  const user = dummyUserData
+  const user = useSelector((state) => state.users.value)
+  const dispatch = useDispatch()
+  const { getToken } = useAuth()
+
   const [editForm, setEditForm] = useState({
     username: user.username,
     full_name: user.full_name,
     bio: user.bio,
     location: user.location,
-    profile_picture: null
+    profile_picture: null,
+    cover_photo: null
   })
   const [isLoading, setIsLoading] = useState(false)
-  const fileInputRef = useRef(null)
+  const profileInputRef = useRef(null)
+  const coverInputRef = useRef(null)
 
-  const handleSaveProfile = async (e) => {
-    e.preventDefault()
+  const handleSaveProfile = async () => {
     setIsLoading(true)
-
     try {
-      await new Promise(resolve => setTimeout(resolve, 1000))
-      console.log('Profile updated:', editForm)
+      const userData = new FormData()
+      const {full_name, username, bio, location, profile_picture, cover_photo} = editForm
+      userData.append('full_name', full_name)
+      userData.append('username', username)
+      userData.append('bio', bio)
+      userData.append('location', location)
+      profile_picture && userData.append('profile', profile_picture)
+      cover_photo && userData.append('cover', cover_photo)
+
+      const token = await getToken()
+      const result = await dispatch(updateUser({ userData, token })).unwrap()
+      if (!result) {
+        throw new Error('Failed to update profile')
+      }
       handleClose()
+      return result // Return for toast.promise
     } catch (error) {
-      console.error('Error updating profile:', error)
+      throw error // Throw for toast.promise to catch
     } finally {
       setIsLoading(false)
     }
@@ -47,16 +67,30 @@ const ProfileModel = ({ onClose }) => {
     }))
   }
 
-  const handleImageClick = () => {
-    fileInputRef.current?.click()
+  const handleProfileImageClick = () => {
+    profileInputRef.current?.click()
   }
 
-  const handleFileChange = (e) => {
+  const handleCoverImageClick = () => {
+    coverInputRef.current?.click()
+  }
+
+  const handleProfileFileChange = (e) => {
     const file = e.target.files[0]
     if (file) {
       setEditForm(prev => ({
         ...prev,
         profile_picture: file
+      }))
+    }
+  }
+
+  const handleCoverFileChange = (e) => {
+    const file = e.target.files[0]
+    if (file) {
+      setEditForm(prev => ({
+        ...prev,
+        cover_photo: file
       }))
     }
   }
@@ -96,7 +130,17 @@ const ProfileModel = ({ onClose }) => {
             </button>
           </div>
 
-          <form className='space-y-6' onSubmit={handleSaveProfile}>
+          <form className='space-y-6' onSubmit={(e) => {
+            e.preventDefault();
+            toast.promise(
+              handleSaveProfile(e),
+              {
+                loading: 'Saving changes...',
+                success: 'Profile updated successfully!',
+                error: (err) => err.message || 'Failed to update profile'
+              }
+            );
+          }}>
             {/* Profile Picture Section */}
             <div className='flex flex-col items-start gap-4'>
               <label className='block text-sm font-medium text-gray-700'>
@@ -104,17 +148,26 @@ const ProfileModel = ({ onClose }) => {
               </label>
 
               <input
-                ref={fileInputRef}
+                ref={profileInputRef}
                 type="file"
                 accept='image/*'
                 id='profile_picture'
                 className='hidden'
-                onChange={handleFileChange}
+                onChange={handleProfileFileChange}
+              />
+
+              <input
+                ref={coverInputRef}
+                type="file"
+                accept='image/*'
+                id='cover_photo'
+                className='hidden'
+                onChange={handleCoverFileChange}
               />
 
               <div
                 className='group/profile relative cursor-pointer'
-                onClick={handleImageClick}
+                onClick={handleProfileImageClick}
               >
                 <img
                   src={
@@ -131,6 +184,36 @@ const ProfileModel = ({ onClose }) => {
               </div>
               <p className='text-sm text-gray-500'>
                 Click the image to upload a new profile picture
+              </p>
+            </div>
+
+            {/* Cover Photo Section */}
+            <div className='flex flex-col items-start gap-4'>
+              <label className='block text-sm font-medium text-gray-700'>
+                Cover Photo
+              </label>
+
+              <div
+                className='group/cover relative cursor-pointer w-full'
+                onClick={handleCoverImageClick}
+              >
+                <div className='aspect-3/1 w-full overflow-hidden rounded-lg'>
+                  <img
+                    src={
+                      editForm.cover_photo
+                        ? URL.createObjectURL(editForm.cover_photo)
+                        : user.cover_photo || 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="400" viewBox="0 0 1200 400"><rect width="1200" height="400" fill="%23e5e7eb"/><text x="600" y="200" font-family="system-ui" font-size="24" fill="%236b7280" text-anchor="middle" dominant-baseline="middle">Add Cover Photo</text></svg>'
+                    }
+                    alt="Cover"
+                    className='w-full h-full object-cover border-2 border-gray-200 group-hover/cover:border-gray-300 transition-colors'
+                  />
+                  <div className='absolute inset-0 hidden group-hover/cover:flex bg-black/40 items-center justify-center transition-opacity'>
+                    <Pencil className='w-5 h-5 text-white' />
+                  </div>
+                </div>
+              </div>
+              <p className='text-sm text-gray-500'>
+                Click the image to upload a new cover photo
               </p>
             </div>
 
