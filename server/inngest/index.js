@@ -132,13 +132,14 @@ const deleteStory = inngest.createFunction(
 
 const sendNotificationOfUnseenMessages = inngest.createFunction(
   { id: "send-unseen-messages-notification" },
-  { cron: "Tz=America/New_York 0 9 * * *" },
+  { cron: "TZ=America/New_York 0 9 * * *" },
   async ({ step }) => {
     const messages = await Message.find({ seen: false }).populate("to_user_id");
 
-    messages.map((messages) => {
-      unseenCount[messages.to_user_id._id] =
-        (unseenCount[messages.to_user_id._id] || 0) + 1;
+    let unseenCount = {};
+    messages.map((message) => {
+      unseenCount[message.to_user_id._id] =
+        (unseenCount[message.to_user_id._id] || 0) + 1;
     });
 
     for (const userId in unseenCount) {
