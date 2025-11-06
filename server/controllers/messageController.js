@@ -1,6 +1,6 @@
 import fs from "fs";
 import path, { format } from "path";
-import Message from "../models/Message";
+import Message from "../models/Message.js";
 
 const connections = {};
 
