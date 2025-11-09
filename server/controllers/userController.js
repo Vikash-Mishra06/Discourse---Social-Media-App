@@ -220,7 +220,7 @@ export const getUserConnections = async (req, res) => {
   try {
     const { userId } = req.auth();
     const user = await User.findById(userId).populate(
-      "Connections followers following"
+      "connections followers following"
     );
 
     const connections = user.connections;
