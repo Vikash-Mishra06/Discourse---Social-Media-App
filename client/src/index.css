@@ -6,6 +6,16 @@
 
 @import "tailwindcss";
 
+:root {
+  --primary-cyan: #06B6D4;
+  --primary-dark: #0891B2;
+  --primary-darker: #0E7490;
+  --accent-teal: #14B8A6;
+  --accent-emerald: #10B981;
+  --bg-light: #F0F9FF;
+  --bg-darker: #E0F2FE;
+}
+
 .no-scrollbar::-webkit-scrollbar {
   display: none;
 }
@@ -14,4 +24,21 @@
 .no-scrollbar {
   -ms-overflow-style: none; /* IE and Edge */
   scrollbar-width: none; /* Firefox */
+}
+
+/* Custom gradient utilities */
+.bg-gradient-cyan {
+  background: linear-gradient(135deg, #06B6D4 0%, #0891B2 100%);
+}
+
+.bg-gradient-cyan-to-teal {
+  background: linear-gradient(135deg, #06B6D4 0%, #14B8A6 100%);
+}
+
+.hover-gradient-cyan {
+  transition: all 0.3s ease;
+}
+
+.hover-gradient-cyan:hover {
+  background: linear-gradient(135deg, #0891B2 0%, #0E7490 100%);
 }

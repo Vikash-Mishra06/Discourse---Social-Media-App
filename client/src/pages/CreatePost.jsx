@@ -93,7 +93,7 @@ const CreatePost = () => {
                 success: 'Post Uploaded Successfully',
                 error: 'Failed to Upload Post'
               }
-            )} className='text-sm bg-linear-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 active:scale-95 transition text-white font-medium px-8 py-2 rounded-md cursor-pointer'>
+            )} className='text-sm bg-linear-to-r from-cyan-500 to-teal-600 hover:from-cyan-600 hover:to-teal-700 active:scale-95 transition text-white font-medium px-8 py-2 rounded-md cursor-pointer'>
               Upload Post
             </button>
           </div>

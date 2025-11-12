@@ -126,7 +126,7 @@ const StoryModel = ({ setShowModal, fetchStories }) => {
                 </div>
                 <button onClick={() => toast.promise(handleCreateStory, {
                     loading: 'Saving...',
-                })} className='flex items-center justify-center gap-2 text-white py-3 mt-4 w-full rounded bg-linear-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 active:scale-95 transition cursor-pointer'>
+                })} className='flex items-center justify-center gap-2 text-white py-3 mt-4 w-full rounded bg-linear-to-r from-cyan-500 to-teal-500 hover:from-cyan-600 hover:to-teal-600  active:scale-95 transition cursor-pointer'>
                     <Sparkle size={18} /> Create Story
                 </button>
             </div>
